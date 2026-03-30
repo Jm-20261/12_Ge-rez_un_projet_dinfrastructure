@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sport_data_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: sport_data
+      POSTGRES_USER: sport_user
+      POSTGRES_PASSWORD: sport_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: sport_data_metabase
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    volumes:
+      - metabase_data:/metabase-data
+
+volumes:
+  postgres_data:
+  metabase_data:
