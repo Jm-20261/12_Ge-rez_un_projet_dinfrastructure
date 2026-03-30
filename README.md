@@ -559,4 +559,4 @@ docker exec -it sport_data_postgres psql -U sport_user -d sport_data -c "\dv"
 
 Projet réalisé dans le cadre du **Projet 12 - Gérez un projet d’infrastructure** de la formation **Data Engineer OpenClassrooms**.
 
-Nom et prénom : **[À compléter]**
+Nom et prénom : **MACHECLER Jean-Mychel**
