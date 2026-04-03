@@ -17,15 +17,13 @@ def normalize_text(value):
     return value
 
 
-def normalize_commute_mode(value):
+def normalize_commute_mode_for_db(value):
+    """
+    Normalisation minimale obligatoire pour respecter les contraintes SQL.
+    """
     normalized = normalize_text(value)
 
-    if normalized in {
-        "marche/running",
-        "marche / running",
-        "marche",
-        "running",
-    }:
+    if normalized in {"marche/running", "marche / running", "marche", "running"}:
         return "Marche/Running"
 
     if normalized in {
@@ -44,7 +42,6 @@ def normalize_commute_mode(value):
         "vehicule thermique / electrique",
         "voiture",
         "voiture thermique/electrique",
-        "voiture",
     }:
         return "Véhicule"
 
@@ -86,7 +83,8 @@ def build_business_tables():
         "date_d_embauche": "hire_date",
     })
 
-    employees_df["commute_mode"] = employees_df["commute_mode"].apply(normalize_commute_mode)
+    employees_df["employee_id"] = employees_df["employee_id"].astype(str)
+    employees_df["commute_mode"] = employees_df["commute_mode"].apply(normalize_commute_mode_for_db)
 
     employees_columns = [
         "employee_id",
@@ -109,6 +107,7 @@ def build_business_tables():
         "pratique_d_un_sport": "main_sport",
     })
 
+    employee_sports_df["employee_id"] = employee_sports_df["employee_id"].astype(str)
     employee_sports_df["has_declared_sport"] = employee_sports_df["main_sport"].notna()
     employee_sports_df["source"] = "excel"
 
@@ -121,6 +120,7 @@ def build_business_tables():
     employee_sports_df = employee_sports_df[employee_sports_columns]
 
     with engine.begin() as conn:
+        # Tables aval à régénérer ensuite dans le pipeline
         conn.execute(text("TRUNCATE TABLE sport_activities"))
         conn.execute(text("TRUNCATE TABLE employee_sports RESTART IDENTITY"))
         conn.execute(text("TRUNCATE TABLE commute_checks"))
@@ -137,14 +137,8 @@ def build_business_tables():
     print(f"employees : {len(employees_df)} lignes")
     print(f"employee_sports : {len(employee_sports_df)} lignes")
 
-    print("\nRépartition commute_mode après normalisation :")
+    print("\nRépartition commute_mode après build :")
     print(employees_df["commute_mode"].value_counts(dropna=False))
-
-    print("\nColonnes employees :")
-    print(list(employees_df.columns))
-
-    print("\nColonnes employee_sports :")
-    print(list(employee_sports_df.columns))
 
 
 if __name__ == "__main__":
