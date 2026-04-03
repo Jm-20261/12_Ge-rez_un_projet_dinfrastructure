@@ -7,3 +7,4 @@ __MACOSX/
 logs/
 data/processed/
 ~$*.xlsx.vscode/
+.vscode/
