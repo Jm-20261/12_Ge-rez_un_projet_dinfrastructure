@@ -1,8 +1,12 @@
 from pathlib import Path
 import re
 import unicodedata
+
 import pandas as pd
+from sqlalchemy import text
+
 from db import get_engine
+
 
 def normalize_column_name(name: str) -> str:
     name = str(name).strip()
@@ -11,6 +15,7 @@ def normalize_column_name(name: str) -> str:
     name = re.sub(r"[^a-z0-9]+", "_", name)
     name = re.sub(r"_+", "_", name).strip("_")
     return name
+
 
 def load_excel_files():
     project_root = Path(__file__).resolve().parents[1]
@@ -30,8 +35,12 @@ def load_excel_files():
 
     engine = get_engine()
 
-    rh_df.to_sql("rh_raw", engine, if_exists="replace", index=False)
-    sport_df.to_sql("sport_raw", engine, if_exists="replace", index=False)
+    with engine.begin() as conn:
+        conn.execute(text("TRUNCATE TABLE rh_raw"))
+        conn.execute(text("TRUNCATE TABLE sport_raw"))
+
+    rh_df.to_sql("rh_raw", engine, if_exists="append", index=False)
+    sport_df.to_sql("sport_raw", engine, if_exists="append", index=False)
 
     print("\nChargement terminé.")
     print(f"rh_raw : {len(rh_df)} lignes")
@@ -42,6 +51,7 @@ def load_excel_files():
 
     print("\nColonnes Sport :")
     print(list(sport_df.columns))
+
 
 if __name__ == "__main__":
     load_excel_files()

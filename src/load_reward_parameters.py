@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
+
 import pandas as pd
 from dotenv import load_dotenv
+from sqlalchemy import text
+
 from db import get_engine
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(PROJECT_ROOT / ".env")
+
 
 def load_reward_parameters():
     engine = get_engine()
@@ -34,10 +38,15 @@ def load_reward_parameters():
     ]
 
     df = pd.DataFrame(parameters)
-    df.to_sql("reward_parameters", engine, if_exists="replace", index=False)
+
+    with engine.begin() as conn:
+        conn.execute(text("TRUNCATE TABLE reward_parameters"))
+
+    df.to_sql("reward_parameters", engine, if_exists="append", index=False)
 
     print("Paramètres chargés.")
     print(df)
+
 
 if __name__ == "__main__":
     load_reward_parameters()

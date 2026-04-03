@@ -1,3 +1,43 @@
+CREATE TABLE IF NOT EXISTS rh_raw (
+    id_salarie TEXT,
+    nom TEXT,
+    prenom TEXT,
+    date_de_naissance TIMESTAMP,
+    bu TEXT,
+    date_d_embauche TIMESTAMP,
+    salaire_brut NUMERIC,
+    type_de_contrat TEXT,
+    nombre_de_jours_de_cp NUMERIC,
+    adresse_du_domicile TEXT,
+    moyen_de_deplacement TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sport_raw (
+    id_salarie TEXT,
+    pratique_d_un_sport TEXT
+);
+
+CREATE TABLE IF NOT EXISTS employees (
+    employee_id TEXT PRIMARY KEY,
+    first_name TEXT,
+    last_name TEXT,
+    full_name TEXT,
+    home_address TEXT,
+    commute_mode TEXT,
+    salary_annual_gross NUMERIC,
+    bu TEXT,
+    hire_date TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS employee_sports (
+    employee_sport_id SERIAL PRIMARY KEY,
+    employee_id TEXT,
+    main_sport TEXT,
+    has_declared_sport BOOLEAN,
+    source TEXT
+);
+
 CREATE TABLE IF NOT EXISTS reward_parameters (
     parameter_name TEXT PRIMARY KEY,
     parameter_value NUMERIC NOT NULL,
@@ -48,6 +88,16 @@ CREATE TABLE IF NOT EXISTS reward_results (
     calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS quality_checks_results (
+    check_id SERIAL PRIMARY KEY,
+    check_name TEXT,
+    table_name TEXT,
+    failed_rows INTEGER,
+    status TEXT,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS pipeline_runs (
     run_id SERIAL PRIMARY KEY,
     step_name TEXT NOT NULL,
@@ -55,4 +105,11 @@ CREATE TABLE IF NOT EXISTS pipeline_runs (
     rows_processed INTEGER,
     message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS table_volume_history (
+    metric_id SERIAL PRIMARY KEY,
+    table_name TEXT NOT NULL,
+    row_count INTEGER NOT NULL,
+    measured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

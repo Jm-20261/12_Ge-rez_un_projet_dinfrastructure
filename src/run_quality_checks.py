@@ -1,5 +1,8 @@
 import pandas as pd
+from sqlalchemy import text, inspect
+
 from db import get_engine
+
 
 def run_quality_checks():
     engine = get_engine()
@@ -175,7 +178,13 @@ def run_quality_checks():
     )
 
     results_df = pd.DataFrame(results)
-    results_df.to_sql("quality_checks_results", engine, if_exists="replace", index=False)
+
+    inspector = inspect(engine)
+    if inspector.has_table("quality_checks_results"):
+        with engine.begin() as conn:
+            conn.execute(text("TRUNCATE TABLE quality_checks_results"))
+
+    results_df.to_sql("quality_checks_results", engine, if_exists="append", index=False)
 
     print("Tests qualité terminés.\n")
     print(results_df)
@@ -185,6 +194,7 @@ def run_quality_checks():
 
     print(f"\nPASS : {nb_pass}")
     print(f"FAIL : {nb_fail}")
+
 
 if __name__ == "__main__":
     run_quality_checks()
