@@ -6,4 +6,4 @@ __pycache__/
 __MACOSX/
 logs/
 data/processed/
-~$*.xlsx
+~$*.xlsx.vscode/
