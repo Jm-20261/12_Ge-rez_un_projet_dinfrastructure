@@ -1,76 +1,60 @@
-# Projet 12 - Gérez un projet d’infrastructure  
-## Option B - Créez et automatisez une architecture de données
+# POC Avantages Sportifs
 
-## 1. Présentation du projet
+## 1. Contexte du projet
 
-Ce projet a été réalisé dans le cadre de la formation **Data Engineer** chez **OpenClassrooms**.
+Ce projet a été réalisé dans le cadre du projet OpenClassrooms **"Gérez un projet d'infrastructure"**.
 
-Le contexte est celui de l’entreprise fictive **Sport Data Solution**. L’objectif est de construire un **POC** pour tester une solution capable de :
+Le contexte est celui de l'entreprise fictive **Sport Data Solution**. Juliette, cofondatrice de l'entreprise, veut lancer un **POC** pour tester une solution d'avantages sportifs pour les salariés.
 
-- suivre la pratique sportive des salariés ;
-- calculer automatiquement les avantages accordés ;
-- estimer le coût financier pour l’entreprise ;
-- publier les activités sportives dans Slack ;
-- afficher les principaux indicateurs dans un dashboard.
+L'idée est de vérifier si la solution est faisable, quelles données il faut collecter, et quel serait le coût pour l'entreprise.
 
-Le projet repose sur des **fichiers Excel sources**, une **base PostgreSQL**, un **pipeline Python**, l’API **Google Maps**, **Slack** et **Metabase** pour la partie reporting.
+Le projet couvre tout le cycle de traitement des données :
+- chargement des fichiers source ;
+- création des tables métier ;
+- nettoyage ;
+- simulation d'activités sportives ;
+- contrôle des trajets domicile-travail ;
+- calcul des avantages ;
+- tests qualité ;
+- monitoring ;
+- dashboards Metabase ;
+- démonstration live ;
+- envoi d'un message Slack.
 
 ---
 
-## 2. Besoin métier
+## 2. Objectifs du POC
 
-Sport Data Solution souhaite encourager la pratique du sport chez ses salariés.
+Le POC doit répondre à trois questions simples :
 
-Deux avantages sont testés dans ce POC :
+1. **Est-ce que la solution est faisable techniquement ?**
+2. **Quelles données doit-on collecter ?**
+3. **Quel est l'impact financier pour l'entreprise ?**
 
-### Prime sportive
-Un salarié peut recevoir une prime de **5 % de son salaire annuel brut** s’il vient au bureau en utilisant un mode de déplacement sportif.
+Deux avantages sont testés dans le projet.
 
-Exemples :
-- marche ;
-- course à pied ;
-- vélo ;
-- trottinette.
+### 2.1 Prime sportive
+Un salarié peut toucher une **prime de 5 % de son salaire annuel brut** s'il vient au bureau avec un mode de déplacement sportif.
 
-### 5 journées bien-être
-Un salarié peut obtenir **5 jours bien-être** s’il pratique une activité sportive régulière en dehors du travail.
+### 2.2 5 jours bien-être
+Un salarié peut obtenir **5 jours bien-être** s'il a une pratique sportive régulière en dehors du travail.
 
 Dans ce projet, la règle retenue est :
-- **au moins 15 activités sportives sur l’année**.
+- **au moins 15 activités sportives sur l'année**.
 
-### Contrôle des trajets
-Le projet doit aussi vérifier si les déclarations domicile → bureau sont cohérentes.
+### 2.3 Contrôle des trajets
+Les trajets domicile → bureau sont contrôlés avec **Google Maps API**.
 
-Les règles utilisées sont :
-- **Marche / Running** : maximum **15 km** ;
-- **Vélo / Trottinette / Autres** : maximum **25 km**.
+Règles utilisées :
+- **Marche/Running** : maximum **15 km** ;
+- **Vélo/Trottinette/Autres** : maximum **25 km**.
 
-Cette validation est faite avec l’API **Google Maps**.
-
-### Slack
-Chaque nouvelle activité sportive peut générer automatiquement un message dans un channel Slack.
-
-### Reporting
-Les principaux KPI doivent être visualisables dans un outil de reporting. Dans ce projet, **Metabase** est utilisé comme équivalent fonctionnel d’un outil type Power BI.
+### 2.4 Slack
+Une activité sportive peut générer automatiquement un message dans Slack pour encourager l'émulation entre les salariés.
 
 ---
 
-## 3. Objectifs du POC
-
-Le POC doit permettre de :
-
-- tester la faisabilité technique de la solution ;
-- identifier les données utiles à collecter ;
-- calculer l’impact financier de la prime sportive ;
-- simuler un historique cohérent d’activités sportives sur 12 mois ;
-- automatiser un pipeline simple et rejouable ;
-- contrôler la qualité des données ;
-- suivre l’exécution du pipeline ;
-- restituer les résultats dans un dashboard clair.
-
----
-
-## 4. Stack technique
+## 3. Stack technique
 
 ### Langage
 - **Python 3.12**
@@ -78,21 +62,18 @@ Le POC doit permettre de :
 ### Base de données
 - **PostgreSQL 16**
 
-### Conteneurisation
+### Conteneurs
 - **Docker**
 - **Docker Compose**
-
-### Exploration de la base
-- **DBeaver**
-
-### APIs externes
-- **Google Maps API** : validation des trajets domicile → bureau
-- **Slack Incoming Webhook** : publication des activités sportives
 
 ### Visualisation
 - **Metabase**
 
-### Principales bibliothèques Python
+### APIs externes
+- **Google Maps API** pour le contrôle des trajets ;
+- **Slack Incoming Webhook** pour le message de démonstration.
+
+### Bibliothèques principales
 - `pandas`
 - `openpyxl`
 - `sqlalchemy`
@@ -101,51 +82,63 @@ Le POC doit permettre de :
 - `requests`
 - `faker`
 
-### Pourquoi ces choix
-Ces outils ont été retenus parce qu’ils sont :
-- simples à mettre en place ;
-- adaptés à un POC ;
-- faciles à expliquer pendant une soutenance ;
-- suffisants pour couvrir tout le besoin métier.
-
 ---
 
-## 5. Architecture de la solution
-
-### Vue d’ensemble
+## 4. Vue d'ensemble de la solution
 
 ```text
 Fichiers Excel RH + Sport
         ↓
 Chargement brut dans PostgreSQL
         ↓
-Nettoyage et transformation
-        ↓
 Création des tables métier
         ↓
-Simulation des activités sportives sur 12 mois
+Nettoyage et standardisation
+        ↓
+Simulation de 12 mois d'activités sportives
         ↓
 Contrôle des trajets avec Google Maps
         ↓
 Calcul des avantages salariés
         ↓
-Tests qualité + monitoring
+Contrôles qualité
         ↓
-Publication Slack + Dashboard Metabase
+Monitoring (pipeline, volumétrie, KPI historisés)
+        ↓
+Dashboards Metabase + message Slack de démonstration
 ```
 
-### Outils utilisés dans le flux
+---
 
-```text
-Excel → Python → PostgreSQL → Google Maps / Slack → Metabase
-```
+## 5. Architecture fonctionnelle
+
+### Sources d'entrée
+- `Données RH.xlsx`
+- `Données Sportive.xlsx`
+
+### Traitements principaux
+- chargement brut ;
+- construction des tables métier ;
+- nettoyage ;
+- simulation des activités ;
+- contrôle des trajets ;
+- calcul des avantages ;
+- tests qualité ;
+- monitoring et historisation des KPI.
+
+### Sorties
+- tables métier dans PostgreSQL ;
+- vues SQL pour dashboards ;
+- dashboards Metabase ;
+- message Slack ;
+- démonstration live.
 
 ---
 
 ## 6. Structure du projet
 
 ```text
-12_Gérez_un_projet_dinfrastructure/
+.
 ├── data/
 │   ├── raw/
 │   │   ├── Données RH.xlsx
@@ -153,8 +146,12 @@ Excel → Python → PostgreSQL → Google Maps / Slack → Metabase
 │   │   └── Note de cadrage POC Avantages Sportifs.pdf
 │   └── processed/
 ├── sql/
-│   ├── schema.sql
-│   └── dashboard_views.sql
+│   ├── 01_schema.sql
+│   ├── 02_private_dashboard_views.sql
+│   ├── 03_public_dashboard_views.sql
+│   ├── 04_monitoring.sql
+│   ├── 05_roles_and_permissions.sql
+│   └── 06_constraints.sql
 ├── src/
 │   ├── db.py
 │   ├── load_raw_data.py
@@ -165,102 +162,192 @@ Excel → Python → PostgreSQL → Google Maps / Slack → Metabase
 │   ├── check_commutes.py
 │   ├── calculate_rewards.py
 │   ├── run_quality_checks.py
+│   ├── capture_kpi_snapshot.py
+│   ├── capture_table_volumes.py
 │   ├── run_full_pipeline.py
 │   ├── send_slack_message.py
-│   └── demo_add_activity.py
-├── .env.example
-├── .gitignore
+│   ├── demo_add_activity.py
+│   ├── demo_show_status.py
+│   ├── demo_run_live.py
+│   └── demo_reset.py
 ├── docker-compose.yml
 ├── requirements.txt
+├── setup_project.sh
+├── .env.example
 └── README.md
 ```
 
 ---
 
-## 7. Modèle de données
+## 7. Rôle de chaque fichier
 
-Le projet s’appuie sur trois niveaux de tables.
+## 7.1 Fichiers à la racine
 
-### A. Tables brutes
+### `README.md`
+Document principal du projet.
+
+### `docker-compose.yml`
+Démarre PostgreSQL et Metabase.
+
+### `requirements.txt`
+Liste les dépendances Python.
+
+### `.env.example`
+Modèle des variables d'environnement à renseigner.
+
+### `setup_project.sh`
+Applique tout le SQL dans le bon ordre.
+
+---
+
+## 7.2 Dossier `data/raw/`
+
+### `Données RH.xlsx`
+Contient les données RH de départ.
+
+### `Données Sportive.xlsx`
+Contient les déclarations sportives de départ.
+
+### `Note de cadrage ... .pdf`
+Document métier de référence.
+
+---
+
+## 7.3 Dossier `sql/`
+
+### `01_schema.sql`
+Crée les tables principales :
 - `rh_raw`
 - `sport_raw`
-
-Elles conservent les fichiers sources sous une forme proche de l’origine.
-
-### B. Tables métier
 - `employees`
 - `employee_sports`
-- `sport_activities`
-- `commute_checks`
-- `reward_results`
-
-Elles servent au traitement métier.
-
-### C. Tables de pilotage
 - `reward_parameters`
-- `pipeline_runs`
+- `commute_checks`
+- `sport_activities`
+- `reward_results`
 - `quality_checks_results`
+- `pipeline_runs`
+- `table_volume_history`
 
-Elles servent au suivi du pipeline et à la qualité des données.
+### `02_private_dashboard_views.sql`
+Crée les vues utilisées par le dashboard privé RH / direction.
 
-### Vues pour le reporting
-- `vw_kpi_summary`
-- `vw_activities_by_month`
-- `vw_top_sports`
-- `vw_commute_status`
-- `vw_employee_rewards`
+### `03_public_dashboard_views.sql`
+Crée les vues utilisées par le dashboard public, sans données sensibles.
+
+### `04_monitoring.sql`
+Crée les éléments liés au monitoring :
+- vues de suivi du pipeline ;
+- vues de qualité ;
+- vues de volumétrie ;
+- table `kpi_history` ;
+- vues `vw_latest_kpi_snapshot` et `vw_kpi_history`.
+
+### `05_roles_and_permissions.sql`
+Crée les rôles SQL et applique les droits d'accès :
+- `role_analytics` pour le dashboard public ;
+- `role_rh_admin` pour le dashboard privé et le monitoring.
+
+### `06_constraints.sql`
+Ajoute des contraintes SQL pour renforcer la cohérence des données :
+- valeurs autorisées pour `commute_mode` ;
+- montants non négatifs ;
+- statuts autorisés ;
+- cohérence des dates ;
+- unicité de certains champs ;
+- clés étrangères entre tables.
 
 ---
 
-## 8. Règles métier implémentées
+## 7.4 Dossier `src/`
 
-### Prime sportive
-La prime est accordée si :
-- le salarié utilise un mode de déplacement sportif ;
-- le trajet domicile → bureau est validé par Google Maps ;
-- le taux de prime est stocké dans `reward_parameters`.
+### `db.py`
+Centralise la connexion à PostgreSQL.
 
-### Journées bien-être
-Le salarié obtient **5 jours** s’il atteint au moins **15 activités sportives** sur l’année.
+### `load_raw_data.py`
+Charge les fichiers Excel dans `rh_raw` et `sport_raw`.
 
-### Paramètres modifiables
-Les paramètres sont stockés dans le fichier `.env` puis chargés dans la base :
-- `PRIME_RATE`
-- `MIN_ACTIVITIES_FOR_WELLBEING`
-- `MAX_DISTANCE_WALK_RUN_KM`
-- `MAX_DISTANCE_BIKE_OTHER_KM`
+### `build_business_tables.py`
+Construit `employees` et `employee_sports` à partir des tables brutes.
 
-Cela permet de rejouer le calcul sans modifier le code métier.
+Ce script fait aussi la **normalisation minimale obligatoire** avant insertion en base, surtout pour `commute_mode`, afin de respecter les contraintes SQL.
+
+### `clean_business_data.py`
+Fait un nettoyage complémentaire sur les données métier déjà chargées.
+
+### `simulate_sport_activities.py`
+Génère un historique cohérent d'activités sportives sur 12 mois.
+
+### `load_reward_parameters.py`
+Charge les paramètres métier :
+- taux de prime ;
+- seuil de 15 activités ;
+- seuils de distance.
+
+### `check_commutes.py`
+Contrôle les trajets domicile-travail avec Google Maps.
+
+### `calculate_rewards.py`
+Calcule les avantages salariés :
+- prime sportive ;
+- éligibilité aux 5 jours bien-être ;
+- coût estimé.
+
+### `run_quality_checks.py`
+Lance les tests qualité et stocke le résultat dans `quality_checks_results`.
+
+### `capture_kpi_snapshot.py`
+Enregistre un snapshot des KPI métier dans `kpi_history`.
+
+### `capture_table_volumes.py`
+Enregistre la volumétrie des tables dans `table_volume_history`.
+
+### `run_full_pipeline.py`
+Exécute tout le pipeline dans le bon ordre et journalise chaque étape dans `pipeline_runs`.
+
+### `send_slack_message.py`
+Envoie un message Slack basé sur la dernière activité sportive.
+
+### `demo_add_activity.py`
+Ajoute des activités de démonstration pour faire passer un salarié au seuil de 15 activités.
+
+### `demo_show_status.py`
+Affiche l'état avant / après du salarié utilisé pour la démonstration.
+
+### `demo_run_live.py`
+Lance toute la démo live :
+- état avant ;
+- ajout des activités ;
+- recalcul ;
+- contrôles qualité ;
+- snapshot KPI ;
+- volumétrie ;
+- Slack ;
+- état après.
+
+### `demo_reset.py`
+Supprime les activités de démonstration et remet l'état initial.
 
 ---
 
-## 9. Préparation de l’environnement
+## 8. Installation
 
-### Prérequis
-- macOS, Linux ou Windows
+## 8.1 Prérequis
 - Python 3.12
-- Docker Desktop
-- Git
+- Docker
+- Docker Compose
 
-### Cloner le projet
-```bash
-git clone <url-du-repo>
-cd 12_Gérez_un_projet_dinfrastructure
-```
+## 8.2 Créer l'environnement Python
 
-### Créer l’environnement virtuel
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
-```
-
-### Installer les dépendances
-```bash
 pip install -r requirements.txt
 ```
 
-### Créer le fichier `.env`
-À partir de `.env.example`, crée un fichier `.env` à la racine du projet.
+## 8.3 Configurer les variables d'environnement
+
+Créer un fichier `.env` à partir de `.env.example`.
 
 Exemple :
 
@@ -282,281 +369,236 @@ SLACK_WEBHOOK_URL=
 GOOGLE_MAPS_API_KEY=
 ```
 
-### Lancer les conteneurs
+## 8.4 Démarrer l'infrastructure
+
 ```bash
 docker compose up -d
 ```
 
 ---
 
-## 10. Initialisation de la base
+## 9. Initialisation SQL
 
-### Création des tables SQL de base
+Appliquer tout le SQL avec une seule commande :
+
 ```bash
-docker exec -i sport_data_postgres psql -U sport_user -d sport_data < sql/schema.sql
+./setup_project.sh
 ```
 
-### Création des vues pour le dashboard
-```bash
-docker exec -i sport_data_postgres psql -U sport_user -d sport_data < sql/dashboard_views.sql
-```
+Ce script applique :
+1. `01_schema.sql`
+2. `02_private_dashboard_views.sql`
+3. `03_public_dashboard_views.sql`
+4. `04_monitoring.sql`
+5. `05_roles_and_permissions.sql`
+6. `06_constraints.sql`
 
 ---
 
-## 11. Exécution du pipeline
+## 10. Exécution du pipeline
 
-Le projet peut être lancé étape par étape ou via un script global.
+## 10.1 Lancer tout le pipeline
 
-### Étapes individuelles
+```bash
+python3 src/run_full_pipeline.py
+```
 
-#### 1. Chargement brut des fichiers Excel
+Ordre d'exécution :
+1. `load_raw_data.py`
+2. `build_business_tables.py`
+3. `clean_business_data.py`
+4. `simulate_sport_activities.py`
+5. `load_reward_parameters.py`
+6. `check_commutes.py`
+7. `calculate_rewards.py`
+8. `run_quality_checks.py`
+9. `capture_kpi_snapshot.py`
+10. `capture_table_volumes.py`
+
+## 10.2 Lancer les scripts séparément
+
+Exemple :
+
 ```bash
 python3 src/load_raw_data.py
-```
-Crée et alimente :
-- `rh_raw`
-- `sport_raw`
-
-#### 2. Création des tables métier
-```bash
 python3 src/build_business_tables.py
-```
-Crée et alimente :
-- `employees`
-- `employee_sports`
-
-#### 3. Nettoyage des données métier
-```bash
-python3 src/clean_business_data.py
-```
-Normalise :
-- les modes de déplacement ;
-- les sports déclarés ;
-- certaines valeurs manquantes.
-
-#### 4. Simulation des activités sportives
-```bash
-python3 src/simulate_sport_activities.py
-```
-Alimente la table `sport_activities` avec un historique simulé sur 12 mois.
-
-#### 5. Chargement des paramètres métier
-```bash
-python3 src/load_reward_parameters.py
-```
-Alimente la table `reward_parameters`.
-
-#### 6. Contrôle des trajets domicile → bureau
-```bash
-python3 src/check_commutes.py
-```
-Alimente la table `commute_checks` avec le résultat de validation.
-
-#### 7. Calcul des avantages salariés
-```bash
 python3 src/calculate_rewards.py
 ```
-Alimente la table `reward_results`.
-
-#### 8. Contrôles qualité
-```bash
-python3 src/run_quality_checks.py
-```
-Alimente la table `quality_checks_results`.
-
-### Exécution complète du pipeline
-```bash
-python3 src/run_full_pipeline.py
-```
-
-Ce script exécute toutes les étapes dans l’ordre et journalise chaque exécution dans `pipeline_runs`.
 
 ---
 
-## 12. Contrôles qualité
+## 11. Monitoring
 
-Le projet contient des contrôles automatiques sur les principales tables.
+Le monitoring est basé sur PostgreSQL + Metabase.
 
-Exemples :
-- `employees` non vide ;
-- `employee_id` unique ;
-- `commute_mode` dans la liste autorisée ;
-- dates des activités cohérentes ;
-- distances non négatives ;
-- activités reliées à un salarié existant ;
-- `reward_results` avec le bon nombre de lignes ;
-- montants de prime non négatifs ;
-- jours bien-être égaux à `0` ou `5`.
-
-Les résultats sont stockés dans :
-- `quality_checks_results`
-
----
-
-## 13. Monitoring
-
-Le projet suit l’exécution des étapes du pipeline dans la table :
+### Tables et vues utilisées
 - `pipeline_runs`
+- `quality_checks_results`
+- `table_volume_history`
+- `kpi_history`
+- `vw_pipeline_status`
+- `vw_quality_summary`
+- `vw_latest_table_volumes`
+- `vw_table_volume_history`
+- `vw_monitoring_last_success`
+- `vw_monitoring_failed_steps`
+- `vw_monitoring_failed_quality_checks`
+- `vw_latest_kpi_snapshot`
+- `vw_kpi_history`
 
-Pour chaque étape, on enregistre :
-- le nom ;
-- le statut ;
-- le nombre de lignes traitées ;
-- un message.
-
-Cela permet de rejouer le pipeline et de vérifier qu’il s’exécute correctement.
+### Ce que le monitoring permet de suivre
+- l'état des étapes du pipeline ;
+- le nombre d'échecs ;
+- les contrôles qualité ;
+- la volumétrie des tables ;
+- l'évolution de certains KPI métier dans le temps.
 
 ---
 
-## 14. Dashboard Metabase
+## 12. Dashboards Metabase
 
-### Lancer Metabase
-Une fois `docker compose up -d` exécuté, Metabase est disponible à l’adresse :
+Le projet utilise **Metabase** comme outil de restitution, en remplacement d'un outil de type Power BI.
 
-```text
-http://localhost:3000
-```
+### Dashboard 1 — Public
+**Objectif :** montrer une vue globale sans données sensibles.
 
-### Connexion à PostgreSQL dans Metabase
-Utiliser les paramètres suivants :
-- Host : `host.docker.internal` (ou `localhost` selon la configuration Docker)
-- Port : `5432`
-- Database : `sport_data`
-- User : `sport_user`
-- Password : `sport_password`
-
-### Vues utilisées pour le dashboard
-- `vw_kpi_summary`
-- `vw_activities_by_month`
-- `vw_top_sports`
-- `vw_commute_status`
-- `vw_employee_rewards`
-
-### KPI suivis
-- coût total estimé des primes ;
-- nombre total d’activités ;
+Exemples de KPI :
 - nombre total de salariés ;
+- salariés pratiquant un sport ;
+- nombre total d'activités ;
+- taux de participation ;
+- éligibilité au trajet sportif ;
+- éligibilité aux 5 jours bien-être.
+
+### Dashboard 2 — Privé RH / Direction
+**Objectif :** suivre l'impact financier détaillé et les données RH.
+
+Exemples de KPI :
+- coût total des primes ;
 - salariés éligibles à la prime ;
 - salariés éligibles aux 5 jours ;
-- total de jours bien-être accordés ;
-- activité par mois ;
-- sports les plus pratiqués ;
-- validation des trajets domicile-bureau ;
-- détail des avantages par salarié.
+- tableau détaillé par salarié.
 
-### Remarque sur l’outil de reporting
-La visualisation a été réalisée avec **Metabase**. Dans ce projet, Metabase est utilisé comme **équivalent fonctionnel** d’un outil type Power BI.
+### Dashboard 3 — Monitoring du pipeline
+**Objectif :** suivre l'état d'exécution et la volumétrie.
 
----
+Exemples de KPI :
+- dernière exécution réussie ;
+- nombre d'étapes en échec ;
+- contrôles qualité ;
+- volumétrie actuelle ;
+- historique des KPI.
 
-## 15. Slack
+### Connexions Metabase utilisées
 
-Le projet utilise un **Incoming Webhook Slack** pour publier automatiquement la dernière activité sportive enregistrée.
+#### `SPORT_DATA_PUBLIC`
+- utilisateur SQL : `role_analytics`
+- accès aux vues publiques uniquement
 
-### Script utilisé
-```bash
-python3 src/send_slack_message.py
-```
-
-### Fonctionnement
-Le script :
-- lit la dernière activité de `sport_activities` ;
-- construit un message lisible ;
-- l’envoie dans le channel Slack configuré dans `.env`.
+#### `SPORT_DATA_PRIVATE`
+- utilisateur SQL : `role_rh_admin`
+- accès aux vues privées et au monitoring
 
 ---
 
-## 16. Démonstration live
+## 13. Sécurité et séparation des accès
 
-Deux démonstrations ont été préparées.
+Le projet sépare les accès SQL avec deux rôles :
 
-### A. Changement du taux de prime
-Modifier dans `.env` :
+### `role_analytics`
+Accès seulement aux vues publiques.
 
-```env
-PRIME_RATE=0.06
-```
+### `role_rh_admin`
+Accès aux vues privées et au monitoring.
 
-Puis relancer :
+Cela permet d'appliquer une logique de **moindre privilège**.
 
-```bash
-python3 src/load_reward_parameters.py
-python3 src/calculate_rewards.py
-```
+---
 
-Résultat attendu :
-- le coût total estimé des primes change dans Metabase.
+## 14. Démonstration live
 
-### B. Ajout d’une activité sportive
-Le script ci-dessous permet d’ajouter des activités de démonstration :
+## 14.1 Objectif
+Montrer en direct qu'un salarié passe de **0 activité** à **15 activités**, puis devient éligible aux **5 jours bien-être**.
+
+## 14.2 Vérifier l'état avant
 
 ```bash
-python3 src/demo_add_activity.py
-python3 src/calculate_rewards.py
-python3 src/send_slack_message.py
+python3 src/demo_show_status.py
 ```
 
-Résultat attendu :
-- nouvelle activité ajoutée dans la base ;
-- message envoyé dans Slack ;
-- mise à jour du reporting dans Metabase.
+## 14.3 Lancer la démo
 
----
-
-## 17. Vérifications utiles
-
-### Vérifier que le pipeline tourne
 ```bash
-python3 src/run_full_pipeline.py
+python3 src/demo_run_live.py
 ```
 
-### Vérifier les tables dans PostgreSQL
+Ce script :
+- affiche l'état avant ;
+- ajoute les activités de démonstration ;
+- relance le calcul ;
+- relance les contrôles qualité ;
+- enregistre un snapshot KPI ;
+- met à jour la volumétrie ;
+- envoie un message Slack ;
+- affiche l'état après.
+
+## 14.4 Revenir à l'état initial
+
 ```bash
-docker exec -it sport_data_postgres psql -U sport_user -d sport_data -c "\dt"
-```
-
-### Vérifier les vues
-```bash
-docker exec -it sport_data_postgres psql -U sport_user -d sport_data -c "\dv"
+python3 src/demo_reset.py
 ```
 
 ---
 
-## 18. Points forts du projet
+## 15. Résultats attendus
 
-- pipeline clair et rejouable ;
-- séparation entre tables brutes, métier et reporting ;
-- intégration d’une API externe utile pour le besoin métier ;
-- publication automatique dans Slack ;
-- dashboard simple et lisible ;
-- tests qualité ;
-- monitoring des exécutions.
-
----
-
-## 19. Limites actuelles
-
-- les activités sportives sont simulées et non récupérées depuis une API sportive réelle ;
-- le POC repose sur des fichiers Excel et non sur une source temps réel ;
-- le dashboard est réalisé dans Metabase et non dans Power BI ;
-- la validation des trajets dépend de la qualité des adresses fournies ;
-- l’orchestration reste simple et pourrait être renforcée avec un orchestrateur dédié.
+À la fin du pipeline, on obtient :
+- une base PostgreSQL structurée ;
+- des vues SQL pour la restitution ;
+- trois dashboards Metabase ;
+- un monitoring des exécutions ;
+- une historisation de certains KPI ;
+- une démo live reproductible ;
+- un message Slack de démonstration.
 
 ---
 
-## 20. Améliorations possibles
+## 16. Limites du projet
 
-- connecter une API sportive réelle ;
-- ajouter une vraie historisation des changements de paramètres ;
-- industrialiser l’orchestration avec Airflow, Kestra ou un outil équivalent ;
-- renforcer la sécurité des secrets ;
-- ajouter plus de tests automatisés ;
-- déployer la solution sur un environnement cloud.
+Ce projet est un **POC**.
+
+Cela veut dire que certaines parties restent simples :
+- pas d'orchestrateur complet type Airflow ou Kestra ;
+- pas de scheduling automatique ;
+- dashboards Metabase à reconstruire manuellement si l'environnement Metabase est réinitialisé ;
+- utilisation de données simulées à la place d'une vraie connexion Strava.
 
 ---
 
-## 21. Auteur
+## 17. Pistes d'amélioration
 
-Projet réalisé dans le cadre du **Projet 12 - Gérez un projet d’infrastructure** de la formation **Data Engineer OpenClassrooms**.
+Quelques améliorations possibles :
+- brancher une vraie API sportive comme Strava ;
+- ajouter un scheduler ou un orchestrateur ;
+- historiser encore plus finement les KPI ;
+- exporter ou sauvegarder automatiquement les dashboards Metabase ;
+- renforcer encore la gestion des secrets et des droits SQL.
 
-Nom et prénom : **MACHECLER Jean-Mychel**
+---
+
+## 18. Conclusion
+
+Ce projet permet de démontrer un pipeline de données de bout en bout autour d'un cas métier simple et concret.
+
+La solution mise en place couvre :
+- l'ingestion des données ;
+- la transformation ;
+- la simulation ;
+- le contrôle métier ;
+- le calcul des avantages ;
+- les tests qualité ;
+- le monitoring ;
+- la démonstration live ;
+- la restitution dans Metabase.
+
+Le projet est donc adapté à un **POC fonctionnel**, démontrable et compréhensible.
